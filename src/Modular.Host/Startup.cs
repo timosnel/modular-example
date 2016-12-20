@@ -1,9 +1,14 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Modular.Host;
+using Modular.Module.NewsFeed;
+using Modular.Module.Poll;
 
 namespace WebApplication
 {
@@ -16,12 +21,6 @@ namespace WebApplication
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            if (env.IsDevelopment())
-            {
-                // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets();
-            }
-
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -30,12 +29,22 @@ namespace WebApplication
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var mvcBuilder = services.AddMvc().LoadModules();
-
-            // Add application services.
+            var mvcBuilder = services.AddMvc();
+            mvcBuilder.LoadModules();
+            mvcBuilder.AddRazorOptions(ConfigureRazorViewEngine);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void ConfigureRazorViewEngine(RazorViewEngineOptions options) 
+        {
+            //TODO: Modules should not be registered manually.
+            options.FileProviders.Add(
+                new EmbeddedFileProvider(
+                    typeof(PollViewComponent).GetTypeInfo().Assembly));
+
+            options.FileProviders.Add(
+                new EmbeddedFileProvider(
+                    typeof(NewsFeedViewComponent).GetTypeInfo().Assembly));
+        }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -52,8 +61,6 @@ namespace WebApplication
             // }
 
             app.UseStaticFiles();
-
-            // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
 
             app.UseMvc(routes =>
             {
