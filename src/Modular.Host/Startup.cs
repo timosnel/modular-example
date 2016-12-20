@@ -31,20 +31,8 @@ namespace WebApplication
         {
             var mvcBuilder = services.AddMvc();
             mvcBuilder.LoadModules();
-            mvcBuilder.AddRazorOptions(ConfigureRazorViewEngine);
         }
 
-        public void ConfigureRazorViewEngine(RazorViewEngineOptions options) 
-        {
-            //TODO: Modules should not be registered manually.
-            options.FileProviders.Add(
-                new EmbeddedFileProvider(
-                    typeof(PollViewComponent).GetTypeInfo().Assembly));
-
-            options.FileProviders.Add(
-                new EmbeddedFileProvider(
-                    typeof(NewsFeedViewComponent).GetTypeInfo().Assembly));
-        }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
