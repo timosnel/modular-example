@@ -1,20 +1,20 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Modular.ModuleA 
+namespace Modular.Module.Poll
 {
-    public class ModuleAViewComponent : ViewComponent 
+    public class PollViewComponent : ViewComponent 
     {
-        public ModuleAViewComponent()
+        public PollViewComponent()
         {
         }
 
         public async Task<IViewComponentResult> InvokeAsync() 
         {
-            var model = new ModuleAViewModel 
+            var model = await Task.FromResult(new PollViewModel 
             {
-                Title = "Module A"
-            };
+                Title = "Poll"
+            });
 
             return View(model);
         } 
