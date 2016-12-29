@@ -33,6 +33,7 @@
       "version": "1.0.0-preview2-update1",
       "type": "build"
     },
+    "Modular.Management": "1.0.0-*",
     "Modular.Module.Poll": "1.0.0-*",
     "Modular.Module.NewsFeed": "1.0.0-*"
   },
