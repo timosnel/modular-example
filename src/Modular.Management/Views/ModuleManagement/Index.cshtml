@@ -1,1 +1,9 @@
+@model Modular.Management.ModuleManagementViewModel
+
 <h1>Management</h1>
+<ul>
+    @foreach (var module in Model.Modules) 
+    {
+        <li>@module.Name</li>
+    }
+</ul>

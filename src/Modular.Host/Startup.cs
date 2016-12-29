@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Modular.Core;
 using Modular.Host;
 using Modular.Management;
 
@@ -28,7 +29,10 @@ namespace WebApplication
         {
             var mvcBuilder = services.AddMvc();
             mvcBuilder.UseManagement();
-            mvcBuilder.LoadModules();
+            var moduleRepository = new ModuleRepository();
+            mvcBuilder.LoadModules(moduleRepository);
+
+            services.AddSingleton<IModuleRepository>(moduleRepository);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

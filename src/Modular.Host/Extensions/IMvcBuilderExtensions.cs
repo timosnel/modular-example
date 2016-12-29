@@ -3,21 +3,31 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.FileProviders;
+using Modular.Core;
 
 namespace Modular.Host 
 {
     public static class IMvcBuilderExtensions 
     {
-        public static IMvcBuilder LoadModules(this IMvcBuilder mvcBuilder)
+		private const string modulePrefix = "Modular.Module.";
+
+        public static IMvcBuilder LoadModules(this IMvcBuilder mvcBuilder, IModuleRepository moduleRepository)
         {
 			var moduleAssemblies = new List<Assembly>();
 			
             foreach (var library in DependencyContext.Default.RuntimeLibraries)
 			{
-				if (library.Name.StartsWith("Modular.Module."))
+				if (library.Name.StartsWith(modulePrefix))
 				{
 					var moduleAssembly = Assembly.Load(new AssemblyName(library.Name));
 					moduleAssemblies.Add(moduleAssembly);
+
+					// The prefix is 15 chars.
+					var niceName = library.Name.Remove(0, 15); 
+					
+					// Insert the modules in the module repository.
+					var module = new Modular.Core.Module(niceName);
+					moduleRepository.AddModule(module);
 				}
 			}
 
