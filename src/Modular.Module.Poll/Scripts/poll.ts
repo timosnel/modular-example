@@ -1,5 +1,0 @@
-class Poll {
-    
-}
-
-export { Poll };
